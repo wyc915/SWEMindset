@@ -1,0 +1,222 @@
+// ===== 全域 =====
+:root {
+  --app-font: 'Roboto', 'Noto Sans TC', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+html, body, .v-application {
+  font-family: var(--app-font) !important;
+}
+body {
+  background: rgb(var(--v-theme-background));
+}
+.v-application [class*='text-'] {
+  font-family: var(--app-font) !important;
+}
+
+.page {
+  max-width: 1280px;
+}
+
+.hero-title {
+  font-size: clamp(1.75rem, 4vw + 0.5rem, 2.75rem);
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.progress-wrap {
+  min-width: 200px;
+}
+.section-title {
+  font-size: 1.375rem;
+  font-weight: 500;
+  margin: 0 0 12px 4px;
+}
+
+.chapter-card {
+  transition: background-color 0.2s, transform 0.2s;
+  &:hover {
+    background: rgb(var(--v-theme-surface-container-high)) !important;
+  }
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.nav-card {
+  border-color: rgb(var(--v-theme-outline-variant)) !important;
+}
+
+// 難度 chip（首頁圖例）
+.chip-basic { color: rgb(var(--v-theme-success)) !important; }
+.chip-mid { color: rgb(var(--v-theme-warning)) !important; }
+.chip-adv { color: rgb(var(--v-theme-error)) !important; }
+
+// 抽屜在 rail 模式時隱藏品牌文字
+.v-navigation-drawer--rail:not(.v-navigation-drawer--is-hovering) .drawer-brand {
+  display: none;
+}
+.v-navigation-drawer--rail:not(.v-navigation-drawer--is-hovering) .drawer-header {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  justify-content: center;
+}
+
+// ===== 章節版面 =====
+.chapter-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+}
+@media (min-width: 1280px) {
+  .chapter-layout {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+}
+.chapter-main {
+  min-width: 0;
+  max-width: 860px;
+}
+.chapter-title {
+  font-size: clamp(1.625rem, 3vw + 0.5rem, 2.25rem);
+  font-weight: 500;
+  line-height: 1.25;
+}
+.chapter-toc .toc-inner {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  .v-list-item-title {
+    font-size: 0.875rem;
+    white-space: normal;
+  }
+}
+
+// ===== Markdown 內容 =====
+.md-content {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgb(var(--v-theme-on-surface));
+  word-break: break-word;
+
+  > :first-child { margin-top: 0; }
+
+  h2, h3, h4 {
+    scroll-margin-top: 80px;
+    line-height: 1.35;
+    font-weight: 500;
+  }
+  h2 {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgb(var(--v-theme-outline-variant));
+  }
+  h3 {
+    font-size: 1.2rem;
+    margin: 2rem 0 0.75rem;
+    color: rgb(var(--v-theme-primary));
+  }
+  h4 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
+
+  p { margin: 0.75rem 0; }
+  ul, ol { padding-left: 1.5rem; margin: 0.75rem 0; }
+  li { margin: 0.25rem 0; }
+  li > ul, li > ol { margin: 0.25rem 0; }
+  strong { font-weight: 700; }
+
+  a {
+    color: rgb(var(--v-theme-primary));
+    text-decoration: none;
+    font-weight: 500;
+    &:hover { text-decoration: underline; }
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid rgb(var(--v-theme-outline-variant));
+    margin: 2rem 0;
+  }
+
+  // 「一句話」等引言 → MD3 tonal 卡片
+  blockquote {
+    margin: 1.25rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    background: rgb(var(--v-theme-secondary-container));
+    color: rgb(var(--v-theme-on-secondary-container));
+    p { margin: 0.25rem 0; }
+  }
+
+  code {
+    font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 0.875em;
+    padding: 0.1em 0.4em;
+    border-radius: 6px;
+    background: rgb(var(--v-theme-surface-container-highest));
+  }
+  pre {
+    margin: 1rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    overflow-x: auto;
+    background: rgb(var(--v-theme-surface-container-high));
+    line-height: 1.6;
+    code { padding: 0; background: none; font-size: 0.85rem; }
+  }
+
+  // 表格：可水平捲動，避免手機版撐破版面
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-radius: 16px;
+    border: 1px solid rgb(var(--v-theme-outline-variant));
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.925rem;
+    line-height: 1.6;
+  }
+  th, td {
+    padding: 0.625rem 0.875rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgb(var(--v-theme-outline-variant));
+  }
+  th {
+    background: rgb(var(--v-theme-surface-container-high));
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: 0; }
+  @media (max-width: 600px) {
+    td { min-width: 120px; }
+  }
+
+  // 難度標籤
+  .lvl {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    height: 22px;
+    margin: 0 2px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    vertical-align: middle;
+    letter-spacing: 0.02em;
+  }
+  .lvl-basic { background: rgba(var(--v-theme-success), 0.16); color: rgb(var(--v-theme-success)); }
+  .lvl-mid { background: rgba(var(--v-theme-warning), 0.16); color: rgb(var(--v-theme-warning)); }
+  .lvl-adv { background: rgba(var(--v-theme-error), 0.16); color: rgb(var(--v-theme-error)); }
+}
+
+// MD3 導覽選中指示：secondary-container 底 + on-secondary-container 文字
+.nav-list .v-list-item--active {
+  background: rgb(var(--v-theme-secondary-container));
+  color: rgb(var(--v-theme-on-secondary-container)) !important;
+  font-weight: 500;
+  > .v-list-item__overlay { opacity: 0 !important; }
+}
