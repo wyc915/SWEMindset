@@ -1,6 +1,8 @@
 # SWEMindset
 一個軟工從初階到進階的常識彙整
 
+🌐 **網站：<https://wyc915.github.io/SWEMindset/>**
+
 ## 文件
 - [知識庫目錄與學習路線](docs/README.md)：共 19 章 + 名詞速查，涵蓋語言選型、架構、資料庫、快取、MQ、分散式、高併發、安全、K8s、CI/CD、維運、AI、韌體橋接與系統設計面試
 - [網頁平台](web/README.md)：Nuxt + Vuetify（Material 3）RWD 知識庫網站
