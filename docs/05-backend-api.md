@@ -2,6 +2,12 @@
 
 > **一句話**：API 是系統間的合約。好的 API 讓呼叫者不會誤用，壞的 API 會讓錯誤擴散到每個呼叫端。
 
+## 學習目標
+
+- 依情境選擇 REST、gRPC、WebSocket、SSE 等 API 風格
+- 設計符合慣例的 REST API，並用冪等鍵避免重複扣款
+- 區分認證與授權，說明 JWT、OAuth 2.0、OIDC 的角色
+
 ---
 
 ## 1. API 風格怎麼選 🟢
@@ -62,6 +68,23 @@
 - **OIDC**：在 OAuth 2.0 上加了「登入身分」（「用 Google 登入」）
 - 現行推薦流程：**Authorization Code + PKCE**
 
+```mermaid
+sequenceDiagram
+  participant U as 使用者瀏覽器
+  participant App as 你的應用程式
+  participant IdP as 身分提供者（Google、Keycloak）
+  App->>App: 產生隨機 code_verifier 與其雜湊 code_challenge
+  App->>U: 導向登入頁（附 code_challenge）
+  U->>IdP: 登入並同意授權
+  IdP-->>U: 導回應用程式，附一次性授權碼 code
+  U->>App: 帶回 code
+  App->>IdP: 用 code + code_verifier 換 Token
+  IdP->>IdP: 驗證 code_verifier 與 code_challenge 相符
+  IdP-->>App: Access Token、ID Token（OIDC）、Refresh Token
+```
+
+PKCE 的作用：即使授權碼在導回過程中被攔截，攻擊者沒有 `code_verifier` 也換不到 Token。
+
 ### 權限模型
 
 - **RBAC**（角色型）：管理員、編輯、訪客 —— 最常見
@@ -78,6 +101,12 @@
 | Python | FastAPI、Django |
 
 ---
+
+## 動手練習
+
+1. **實作冪等 API**：用 ASP.NET Core 寫一個建立訂單的 POST API，支援 `Idempotency-Key` 標頭，用同一個 Key 重送請求驗證不會重複建立。
+2. **OpenAPI 文件**：為現有 API 產生 Swagger 文件，檢查 URL 命名、方法與狀態碼是否符合本章慣例。
+3. **體驗 OIDC 登入**：用 Keycloak（Docker 啟動）設定一個 Client，讓前端以 Authorization Code + PKCE 登入，並解碼 ID Token 觀察內容。
 
 ## 面試常問
 

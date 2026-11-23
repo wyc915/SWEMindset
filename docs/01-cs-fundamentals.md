@@ -2,6 +2,13 @@
 
 > **一句話**：所有效能問題、併發 bug、網路異常，最後都會追到這一章。不用背細節，但要懂「為什麼」。
 
+## 學習目標
+
+- 說明行程、執行緒、協程的差別，以及共享記憶體為什麼需要鎖
+- 解釋事件驅動 I/O 為何能用少量執行緒處理大量連線
+- 描述從輸入網址到畫面出現的完整網路流程
+- 看懂常見 HTTP 狀態碼並說出 401 與 403 的差異
+
 ---
 
 ## 1. 行程、執行緒、協程 🟢
@@ -55,6 +62,22 @@
 4. **送出 HTTP 請求**，伺服器回應
 5. 瀏覽器**解析並渲染**頁面
 
+```mermaid
+sequenceDiagram
+  participant B as 瀏覽器
+  participant D as DNS 伺服器
+  participant S as 網站伺服器
+  B->>D: 查詢 example.com 的 IP
+  D-->>B: 回傳 IP
+  B->>S: SYN
+  S-->>B: SYN + ACK
+  B->>S: ACK（TCP 連線建立）
+  B->>S: TLS 握手：驗證憑證、協商金鑰
+  B->>S: HTTP 請求 GET /
+  S-->>B: HTTP 回應（HTML）
+  B->>B: 解析 HTML、載入 CSS/JS、渲染畫面
+```
+
 ### 6.2 TCP vs UDP
 
 | | TCP | UDP |
@@ -77,6 +100,12 @@
 - **CORS**：瀏覽器限制跨網域請求的安全機制，後端需設定允許來源。
 
 ---
+
+## 動手練習
+
+1. **觀察網路請求**：開啟瀏覽器開發者工具的 Network 分頁瀏覽任一網站，找出 DNS、連線、TLS、等待回應各花多少時間；再用 `curl -v https://example.com` 觀察 TLS 握手與 HTTP 標頭。
+2. **重現 Race Condition**：用 C# 開 10 個 Task 各對同一個整數加 10 萬次，觀察結果不等於 100 萬；再分別改用 `lock` 與 `Interlocked.Increment` 修正。
+3. **體驗浮點誤差**：在任一語言印出 `0.1 + 0.2`，再改用 `decimal` 比較結果。
 
 ## 面試常問
 

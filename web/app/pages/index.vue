@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import type { ChapterMeta, HomeContent } from '#shared/types/content'
+import type { Track } from '~/utils/chapterIcons'
 
 const { data: chapters } = await useFetch<ChapterMeta[]>('/api/chapters', { key: 'chapters' })
 const { data: home } = await useFetch<HomeContent>('/api/home', { key: 'home' })
 const { isRead, read } = useProgress()
 const onContentClick = useInternalLinks()
+
+const groups = computed(() => {
+  const order: Track[] = ['software', 'firmware', 'appendix']
+  return order
+    .map((track) => ({ track, label: TRACK_LABEL[track], items: chapters.value?.filter((c) => chapterTrack(c.order) === track) ?? [] }))
+    .filter((g) => g.items.length)
+})
 
 const total = computed(() => chapters.value?.length ?? 0)
 const done = computed(() => chapters.value?.filter((c) => read.value.includes(c.slug)).length ?? 0)
@@ -47,9 +55,14 @@ useHead({ title: 'SWE Mindset｜軟體工程師必備常識' })
       <v-chip prepend-icon="mdi-circle" class="chip-adv" variant="tonal">高階：架構決策</v-chip>
     </div>
 
-    <h2 class="section-title">章節</h2>
+    <template v-for="g in groups" :key="g.track">
+    <h2 class="section-title d-flex align-center ga-2">
+      <v-icon :icon="g.track === 'firmware' ? 'mdi-chip' : g.track === 'software' ? 'mdi-code-tags' : 'mdi-book-alphabet'" size="22" color="primary" />
+      {{ g.label }}
+      <span class="text-body-medium text-medium-emphasis">（{{ g.items.length }}）</span>
+    </h2>
     <v-row dense class="mb-8">
-      <v-col v-for="c in chapters" :key="c.slug" cols="12" sm="6" lg="4">
+      <v-col v-for="c in g.items" :key="c.slug" cols="12" sm="6" lg="4">
         <v-card :to="`/chapters/${c.slug}`" color="surface-container" rounded="xl" class="chapter-card h-100" flat>
           <v-card-item>
             <template #prepend>
@@ -67,6 +80,7 @@ useHead({ title: 'SWE Mindset｜軟體工程師必備常識' })
         </v-card>
       </v-col>
     </v-row>
+    </template>
 
     <h2 class="section-title">學習路線</h2>
     <v-card color="surface-container-low" rounded="xl" flat class="pa-4 pa-md-6">

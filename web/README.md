@@ -18,7 +18,8 @@ npm run generate   # 產生靜態站到 .output/public
 | `server/content/` | 內容來源實作（目前為 Markdown），`index.ts` 依 `contentSource` 切換 |
 | `server/api/` | 前端取資料的 API（建置時預先產生） |
 | `app/layouts/default.vue` | RWD 版面：手機抽屜 / 平板 Navigation Rail / 桌機常駐側欄 |
-| `app/pages/` | 首頁、章節頁 |
+| `app/pages/` | 首頁、章節頁（面試解答可摺疊）|
+| `app/composables/useMermaid.ts` | 將 md 中的 Mermaid 流程圖渲染為 SVG，跟隨深淺色主題 |
 | `app/plugins/vuetify.ts` | Material 3 色票與深淺色主題 |
 
 ## 之後改接 PostgreSQL
