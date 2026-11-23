@@ -2,6 +2,13 @@
 
 > **一句話**：Docker 解決「在我電腦能跑，在伺服器不能跑」；Kubernetes 解決「幾百個容器要怎麼自動管理」。
 
+## 學習目標
+
+- 比較容器與虛擬機，寫出符合最佳實務的 Dockerfile
+- 說明 Pod、Deployment、Service、Ingress 的關係
+- 設定 Liveness / Readiness Probe 與資源限制，並排查 Pod 異常
+- 區分 IaaS、PaaS、SaaS 並具備雲端成本意識
+
 ---
 
 ## 1. 容器（Docker）🟢
@@ -58,6 +65,22 @@
 | **HPA** | 依 CPU、記憶體等指標自動增減 Pod 數 | 自動擴縮 |
 | **Namespace** | 邏輯隔離 | 分開 dev、test 環境或不同團隊 |
 
+**物件之間的關係**：
+
+```mermaid
+flowchart LR
+  User[使用者] --> Ing[Ingress<br/>api.example.com]
+  Ing --> Svc[Service<br/>固定位址與負載平衡]
+  Svc --> P1[Pod v2]
+  Svc --> P2[Pod v2]
+  Svc --> P3[Pod v2]
+  Dep[Deployment<br/>replicas: 3] -. 建立並維持 .-> P1
+  Dep -.-> P2
+  Dep -.-> P3
+  CM[ConfigMap / Secret] -. 注入設定 .-> P1
+  HPA[HPA] -. 調整 replicas .-> Dep
+```
+
 ### 2.3 健康檢查（常被問）
 
 - **Liveness Probe**：程式還活著嗎？失敗 → 重啟容器
@@ -93,6 +116,12 @@
 **成本意識**：雲端最常見的問題是帳單失控 → 自動擴縮、關閉閒置資源、設定預算告警。
 
 ---
+
+## 動手練習
+
+1. **容器化你的專案**：為 .NET API 寫多階段 Dockerfile，並用 Docker Compose 一起啟動 PostgreSQL 與 Redis。
+2. **本機 K8s**：用 kind 建立叢集，部署 API 的 Deployment、Service、Ingress，設定 Probe 與資源限制，再用 `kubectl rollout` 練習更新與回滾。
+3. **故意出錯**：把記憶體 limit 設很小或給錯環境變數，練習用 `describe` 與 `logs --previous` 排查 CrashLoopBackOff。
 
 ## 面試常問
 

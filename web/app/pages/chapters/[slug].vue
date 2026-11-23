@@ -38,6 +38,46 @@ onMounted(() => nextTick(observe))
 watch(chapter, () => nextTick(observe))
 onBeforeUnmount(() => observer?.disconnect())
 
+// 面試題解答：全部展開 / 收合
+const hasQa = computed(() => chapter.value?.html.includes('class="qa"') ?? false)
+const qaOpen = ref(false)
+function toggleAllQa() {
+  qaOpen.value = !qaOpen.value
+  document.querySelectorAll<HTMLDetailsElement>('.md-content details.qa').forEach((d) => (d.open = qaOpen.value))
+}
+watch(slug, () => (qaOpen.value = false))
+
+// 只有捲到面試題區時才顯示浮動按鈕
+const qaInView = ref(false)
+let qaObserver: IntersectionObserver | undefined
+const qaVisible = new Set<Element>()
+function observeQa() {
+  qaObserver?.disconnect()
+  qaVisible.clear()
+  qaInView.value = false
+  qaObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e) => (e.isIntersecting ? qaVisible.add(e.target) : qaVisible.delete(e.target)))
+    qaInView.value = qaVisible.size > 0
+  })
+  document.querySelectorAll('.md-content details.qa').forEach((el) => qaObserver!.observe(el))
+}
+onMounted(() => nextTick(observeQa))
+watch(chapter, () => nextTick(observeQa))
+onBeforeUnmount(() => qaObserver?.disconnect())
+
+// 從搜尋或錨點跳到題目時自動展開
+function openHashTarget() {
+  const id = decodeURIComponent(location.hash.slice(1))
+  const el = id ? document.getElementById(id) : null
+  if (el instanceof HTMLDetailsElement) el.open = true
+}
+onMounted(() => nextTick(openHashTarget))
+watch(() => route.hash, () => nextTick(openHashTarget))
+
+// 流程圖
+const { render: renderMermaid } = useMermaid()
+watch(chapter, () => nextTick(renderMermaid))
+
 const tocH2 = computed(() => chapter.value?.toc.filter((t) => t.level === 2) ?? [])
 </script>
 
@@ -64,6 +104,23 @@ const tocH2 = computed(() => chapter.value?.toc.filter((t) => t.level === 2) ?? 
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
+
+        <ClientOnly>
+          <v-fab-transition>
+            <v-btn
+              v-if="hasQa && qaInView"
+              class="qa-fab"
+              color="tertiary-container"
+              size="large"
+              rounded="lg"
+              elevation="3"
+              :prepend-icon="qaOpen ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+              @click="toggleAllQa"
+            >
+              {{ qaOpen ? '收合解答' : '展開解答' }}
+            </v-btn>
+          </v-fab-transition>
+        </ClientOnly>
 
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="md-content" @click="onContentClick" v-html="chapter.html" />

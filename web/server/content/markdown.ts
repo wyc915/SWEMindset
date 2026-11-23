@@ -84,6 +84,17 @@ export function renderMarkdown(src: string, opts: RenderOptions): RenderResult {
     }
   }
 
+  // Mermaid 流程圖：輸出原始碼，由前端渲染成 SVG（未渲染前顯示原始碼）
+  const defaultFence = md.renderer.rules.fence!
+  md.renderer.rules.fence = (tks, idx, options, env, self) => {
+    const t = tks[idx]
+    if (t.info.trim() === 'mermaid') {
+      const src = md.utils.escapeHtml(t.content)
+      return `<div class="mermaid-diagram" data-src="${src}"><pre class="mermaid-fallback"><code>${src}</code></pre></div>\n`
+    }
+    return defaultFence(tks, idx, options, env, self)
+  }
+
   md.renderer.rules.table_open = () => '<div class="table-wrap"><table>\n'
   md.renderer.rules.table_close = () => '</table></div>\n'
 
@@ -93,6 +104,8 @@ export function renderMarkdown(src: string, opts: RenderOptions): RenderResult {
     const l = LEVELS[e]
     return `<span class="lvl lvl-${l.cls}">${l.label}</span>`
   })
+  html = wrapQuestions(html)
+  html = wrapSections(html)
   return { html, toc, title }
 }
 
@@ -107,4 +120,28 @@ export function toPlainText(src: string): string {
     .replace(LEVEL_RE, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+/**
+ * 將「### Qn. 題目」與其後的解答包成可展開區塊（預設收合），
+ * 讓讀者先自己作答再看解答（主動回想）。
+ */
+export function wrapQuestions(html: string): string {
+  return html.replace(
+    /<h3 id="(q\d+[^"]*)">([\s\S]*?)<\/h3>([\s\S]*?)(?=<h3 |<h2 |<hr|$)/g,
+    (_m, id: string, title: string, body: string) =>
+      `<details class="qa" id="${id}"><summary>${title}</summary><div class="qa-answer">${body}</div></details>\n`,
+  )
+}
+
+/** 「學習目標」「動手練習」段落包成卡片，與正文區隔 */
+export function wrapSections(html: string): string {
+  const wrap = (id: string, cls: string) =>
+    html.replace(
+      new RegExp(`(<h2 id="${id}">[\\s\\S]*?)(?=<h2 |<hr|$)`),
+      (m: string) => `<section class="${cls}">${m}</section>\n`,
+    )
+  html = wrap('學習目標', 'sec-objectives')
+  html = wrap('動手練習', 'sec-practice')
+  return html
 }

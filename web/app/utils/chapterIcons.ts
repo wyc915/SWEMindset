@@ -16,9 +16,15 @@ const ICONS: Record<string, string> = {
   '14': 'mdi-rocket-launch',
   '15': 'mdi-chart-line',
   '16': 'mdi-robot',
-  '17': 'mdi-memory',
+  '17': 'mdi-draw',
   '18': 'mdi-account-group',
-  '19': 'mdi-draw',
+  '19': 'mdi-memory',
+  '20': 'mdi-language-c',
+  '21': 'mdi-integrated-circuit-chip',
+  '22': 'mdi-timer-cog-outline',
+  '23': 'mdi-bug-check',
+  '24': 'mdi-linux',
+  '25': 'mdi-server',
 }
 
 export function chapterIcon(slug: string): string {
@@ -27,4 +33,18 @@ export function chapterIcon(slug: string): string {
 
 export function chapterLabel(order: number | null): string {
   return order == null ? '附錄' : String(order).padStart(2, '0')
+}
+
+export type Track = 'software' | 'firmware' | 'appendix'
+
+/** 章節所屬學習軌：01–18 軟體、19 起韌體、無序號為附錄 */
+export function chapterTrack(order: number | null): Track {
+  if (order == null) return 'appendix'
+  return order >= 19 ? 'firmware' : 'software'
+}
+
+export const TRACK_LABEL: Record<Track, string> = {
+  software: '軟體工程軌',
+  firmware: '韌體工程軌',
+  appendix: '附錄',
 }

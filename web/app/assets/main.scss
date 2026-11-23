@@ -220,3 +220,128 @@ body {
   font-weight: 500;
   > .v-list-item__overlay { opacity: 0 !important; }
 }
+
+// ===== 面試題（可展開） =====
+.qa-fab {
+  position: fixed !important;
+  right: 24px;
+  bottom: 24px;
+  z-index: 5;
+  color: rgb(var(--v-theme-on-tertiary-container)) !important;
+}
+.md-content details.qa {
+  margin: 0.75rem 0;
+  border-radius: 16px;
+  background: rgb(var(--v-theme-surface-container));
+  scroll-margin-top: 80px;
+  overflow: hidden;
+
+  > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.875rem 3rem 0.875rem 1.25rem;
+    font-weight: 500;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    position: relative;
+    &::-webkit-details-marker { display: none; }
+    &::after {
+      content: '\F0140'; // mdi-chevron-down
+      font-family: 'Material Design Icons';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      color: rgb(var(--v-theme-on-surface-variant));
+      transition: transform 0.2s;
+    }
+    &:hover { background: rgba(var(--v-theme-on-surface), 0.04); }
+  }
+  &[open] > summary {
+    color: rgb(var(--v-theme-primary));
+    &::after { transform: translateY(-50%) rotate(180deg); }
+  }
+  .qa-answer {
+    padding: 0.25rem 1.25rem 1rem;
+    border-top: 1px solid rgb(var(--v-theme-outline-variant));
+    > :first-child { margin-top: 0.75rem; }
+  }
+}
+
+// 側欄學習軌標題（rail 收合時隱藏）
+.track-subheader {
+  font-weight: 500;
+  color: rgb(var(--v-theme-primary)) !important;
+}
+.v-navigation-drawer--rail:not(.v-navigation-drawer--is-hovering) .track-subheader {
+  visibility: hidden;
+  min-height: 12px !important;
+  padding: 0 !important;
+}
+
+// ===== 學習目標 / 動手練習卡片 =====
+.md-content {
+  .sec-objectives,
+  .sec-practice {
+    margin: 1.5rem 0;
+    padding: 0.5rem 1.25rem 0.75rem;
+    border-radius: 16px;
+    > h2 {
+      border-bottom: 0;
+      margin: 0.75rem 0 0.25rem;
+      padding: 0;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      &::before {
+        font-family: 'Material Design Icons';
+        font-size: 1.35rem;
+        font-weight: normal;
+      }
+    }
+  }
+  .sec-objectives {
+    background: rgb(var(--v-theme-tertiary-container));
+    color: rgb(var(--v-theme-on-tertiary-container));
+    > h2::before { content: '\F08C9'; } // mdi-bullseye-arrow
+  }
+  .sec-practice {
+    background: rgb(var(--v-theme-surface-container));
+    border: 1px dashed rgb(var(--v-theme-outline));
+    > h2::before { content: '\F05B7'; color: rgb(var(--v-theme-primary)); } // mdi-wrench
+  }
+
+  // 流程圖
+  .mermaid-diagram {
+    margin: 1.25rem 0;
+    padding: 1rem;
+    border-radius: 16px;
+    background: rgb(var(--v-theme-surface-container-low));
+    border: 1px solid rgb(var(--v-theme-outline-variant));
+    overflow-x: auto;
+    text-align: center;
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .mermaid-fallback {
+      text-align: left;
+      margin: 0;
+    }
+    &.is-scrollable {
+      text-align: left;
+      position: relative;
+      &::before {
+        content: '← 左右滑動查看完整圖 →';
+        display: block;
+        position: sticky;
+        left: 0;
+        font-size: 0.75rem;
+        color: rgb(var(--v-theme-on-surface-variant));
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}

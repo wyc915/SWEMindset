@@ -58,21 +58,27 @@ onMounted(() => {
       <v-list nav density="comfortable" class="nav-list px-2">
         <v-list-item to="/" exact prepend-icon="mdi-home-variant" title="首頁" rounded="pill" />
         <v-divider class="my-2" />
-        <v-list-item
-          v-for="c in chapters"
-          :key="c.slug"
-          :to="`/chapters/${c.slug}`"
-          :prepend-icon="chapterIcon(c.slug)"
-          rounded="pill"
-          :title="c.title"
-        >
-          <template #append>
-            <span class="d-flex align-center ga-1">
-              <v-icon v-if="isRead(c.slug)" icon="mdi-check-circle" size="16" color="success" />
-              <span class="text-caption text-medium-emphasis">{{ chapterLabel(c.order) }}</span>
-            </span>
-          </template>
-        </v-list-item>
+        <template v-for="(c, i) in chapters" :key="c.slug">
+          <v-list-subheader
+            v-if="i === 0 || chapterTrack(chapters![i - 1].order) !== chapterTrack(c.order)"
+            class="track-subheader"
+          >
+            {{ TRACK_LABEL[chapterTrack(c.order)] }}
+          </v-list-subheader>
+          <v-list-item
+            :to="`/chapters/${c.slug}`"
+            :prepend-icon="chapterIcon(c.slug)"
+            rounded="pill"
+            :title="c.title"
+          >
+            <template #append>
+              <span class="d-flex align-center ga-1">
+                <v-icon v-if="isRead(c.slug)" icon="mdi-check-circle" size="16" color="success" />
+                <span class="text-caption text-medium-emphasis">{{ chapterLabel(c.order) }}</span>
+              </span>
+            </template>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
 
